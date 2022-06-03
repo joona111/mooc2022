@@ -1,0 +1,24 @@
+Selain lähettää uuden merkinnän palvelimelle
+selain -> HTTP POST palvelin https://studies.cs.helsinki.fi/exampleapp/new_note
+
+SElain pyytää html koodin uudestaan
+selain -> palveliln HTTP GET https://studies.cs.helsinki.fi/exampleapp/notes
+
+palvelin -> selain: HTML koodi
+
+selain -> palvelin HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.css
+
+palvelin -> selain: main.css
+
+selain -> palvelin HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.js
+
+palvelin -> selain: main.js
+
+
+selain suorittaa javascript koodia ja pyytää json tiedoston palvelimelta
+
+selain -> palvelin: https://studies.cs.helsinki.fi/exampleapp/data.json
+
+palvelin -> selain: json tiedosto
+
+selain päivittää tiedot ruudulle
