@@ -1,5 +1,5 @@
 import { useState ,useEffect} from 'react'
-import axios from 'axios'
+
 import nimet from './nimet'
 
 const App = () => {
@@ -11,9 +11,8 @@ const App = () => {
  
  
  
-  const [persons, setPersons] = useState([
-
-  ]) 
+  const [persons, setPersons] = useState([])
+  const [message, setMessage] = useState(null) 
 
   
   
@@ -24,8 +23,11 @@ const App = () => {
     })
 
   }
-  useEffect(hook)
+  
 
+  useEffect(() => {
+    return hook
+  })
   
   const [newName, setNewName] = useState('')
 
@@ -34,13 +36,13 @@ const App = () => {
   const [filter,setFilter] = useState('')
 
   const addName = (event) => {
+    
     event.preventDefault()
     const nameObject = {
       name :newName,
       number:newNumber
     }
- 
-   
+  
   
     const names = (persons.map(person => {
    
@@ -49,7 +51,7 @@ const App = () => {
      }))
      
      if(names.includes(newName)===false){
-    
+      setMessage("added "+newName)
       nimet.create(nameObject)
       
       //setPersons(persons.concat(nameObject))
@@ -58,7 +60,7 @@ const App = () => {
         const confirmation = window.confirm(`${newName} already exists, do you want to update phone number?`)
         if(confirmation ===false)return
        nimet.getNames().then(response => {
-        
+        setMessage("modified number for "+ newName)
         
         nimet.update(response.data.find(e => e.name ===newName).id,nameObject)
       })
@@ -70,7 +72,10 @@ const App = () => {
         
        
   }
-    
+  
+  setTimeout(() =>{
+    setMessage(null)
+      },3000)
     setNewName("")
     //console.log("add name: ",event.target)
   }
@@ -89,13 +94,12 @@ const filtered = persons.filter(person => person.name.includes(filter))
 
 
 
-
 return (
     <div>
      
       <h2>Phonebook</h2>
      <Filter filter = {filter} setFilter = {setFilter} />
-    
+    <Notification  message={message} />
     <Form 
      addName = {addName}
      handleNameChange = {handleNameChange}
@@ -103,7 +107,7 @@ return (
      newName = {newName}
      newNumber = {newNumber} />
      
-     <Persons persons = {filtered}> </Persons>
+     <Persons persons = {filtered} setMessage = {setMessage}> </Persons>
     </div>
   )
 
@@ -131,6 +135,27 @@ const Form = ({addName,handleNameChange,handleNumberChange,newName,newNumber}) =
   </form>
   )
 }
+const Notification = ({message}) => {
+ 
+  const style = {
+    color: 'green',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+ 
+  if(message===null)return null
+
+  return(
+    <div style = {style}>
+      {message}
+    </div>
+  )
+}
+
 const Filter = ({filter,setFilter}) => {
   
   return(
@@ -147,12 +172,18 @@ const Filter = ({filter,setFilter}) => {
   )
 
 }
-const Persons =({persons}) => {
+const Persons =({persons ,setMessage}) => {
   return(
     <>
     <h2>Numbers</h2>
     
-      {persons.map(person =><p>{person.name} {person.number}<button onClick={()=>nimet.remove(person.id,person.name)}>delete</button></p> )}
+      {persons.map(person =><p>{person.name} {person.number}<button onClick={()=> {
+        nimet.remove(person.id,person.name)
+        setMessage(person.name+" deleted")
+        setTimeout(() =>{
+          setMessage(null)
+            },3000)
+        } }>delete</button></p> )}
       </>
       
   )
