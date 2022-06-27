@@ -1,5 +1,7 @@
 import { useState ,useEffect} from 'react'
 import axios from 'axios'
+import nimet from './nimet'
+
 const App = () => {
  
 
@@ -13,14 +15,18 @@ const App = () => {
 
   ]) 
 
+  
+  
   const hook =() => {
    
-    axios.get('http://localhost:3001/persons').then(person => {
+    nimet.getNames().then(person => {
     setPersons(person.data)
     })
 
   }
-  useEffect(hook,[])
+  useEffect(hook)
+
+  
   const [newName, setNewName] = useState('')
 
   const [newNumber,setNewNumber] = useState('')
@@ -43,10 +49,26 @@ const App = () => {
      }))
      
      if(names.includes(newName)===false){
-      setPersons(persons.concat(nameObject))
+    
+      nimet.create(nameObject)
+      
+      //setPersons(persons.concat(nameObject))
      }
        else  if(names.includes(newName)===true){
-        alert(`${newName} is already added to phonebook`)
+        const confirmation = window.confirm(`${newName} already exists, do you want to update phone number?`)
+        if(confirmation ===false)return
+       nimet.getNames().then(response => {
+        
+        
+        nimet.update(response.data.find(e => e.name ===newName).id,nameObject)
+      })
+       
+        
+        //x.data.filter(x => x.name ===newName.name)
+        
+        
+        
+       
   }
     
     setNewName("")
@@ -67,6 +89,7 @@ const filtered = persons.filter(person => person.name.includes(filter))
 
 
 
+
 return (
     <div>
      
@@ -80,7 +103,7 @@ return (
      newName = {newName}
      newNumber = {newNumber} />
      
-     <Persons persons = {filtered}></Persons>
+     <Persons persons = {filtered}> </Persons>
     </div>
   )
 
@@ -129,7 +152,7 @@ const Persons =({persons}) => {
     <>
     <h2>Numbers</h2>
     
-      {persons.map(person =><p>{person.name} {person.number}</p> )}
+      {persons.map(person =><p>{person.name} {person.number}<button onClick={()=>nimet.remove(person.id,person.name)}>delete</button></p> )}
       </>
       
   )
