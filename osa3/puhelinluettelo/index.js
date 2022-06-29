@@ -5,12 +5,17 @@ const app = express()
 app.use(express.json())
 var morgan = require('morgan')
 
+const cors = require('cors')
+
+app.use(cors())
+
+
 //app.use(morgan("tiny"))
 
 app.use(morgan(' :method :url :status :res[content-length] - :response-time ms :content'))
-morgan.token('content', function getId (req) {
-    return JSON.stringify(req.body)
-  })
+ morgan.token('content', function getId (req) {
+     return JSON.stringify(req.body)
+   })
 let  persons = [
     { 
       name: "Arto Hellas", 
@@ -57,12 +62,13 @@ app.get("/api/persons/:id",(request,response) => {
     }
 })
 app.post("/api/persons",(request,response) => {
-       
+    
     const person = (request.body)
     if(persons.filter(x => (x.name ===person.name)).length>0 ){
     console.log(persons.filter(x => (x.name ===person.name||x.number ===person.number)))
         return response.status(400).json({ 
         error: 'name already exists' 
+        
       })}
       if(persons.filter(x => (x.number ===person.number)).length>0 ){
       
@@ -81,6 +87,7 @@ app.post("/api/persons",(request,response) => {
       }
     person.id = Math.round(Math.random()*1000)
     persons = persons.concat(person)
+    
     response.json(person)
 
 })
@@ -95,7 +102,7 @@ app.delete("/api/persons/:id",(request,response) => {
    
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log("running on port 3001")
 })
