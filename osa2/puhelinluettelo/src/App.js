@@ -16,18 +16,16 @@ const App = () => {
 
   
   
-  const hook =() => {
-   
-    nimet.getNames().then(person => {
-    setPersons(person.data)
-    })
 
-  }
   
 
   useEffect(() => {
-    return hook
-  })
+    nimet.getNames().then(person => {
+      setPersons(person.data)
+      
+      })
+  },[])
+ 
   
   const [newName, setNewName] = useState('')
 
@@ -53,7 +51,10 @@ const App = () => {
      if(names.includes(newName)===false){
       setMessage("added "+newName)
       nimet.create(nameObject)
-      
+      nimet.getNames().then(person => {
+        setPersons(person.data)
+        
+        })
       //setPersons(persons.concat(nameObject))
      }
        else  if(names.includes(newName)===true){
@@ -73,10 +74,12 @@ const App = () => {
        
   }
   
-  setTimeout(() =>{
-    setMessage(null)
-      },3000)
+ 
     setNewName("")
+    nimet.getNames().then(person => {
+      setPersons(person.data)
+      
+      })
     //console.log("add name: ",event.target)
   }
   const handleNameChange = (event) => {
@@ -98,8 +101,8 @@ return (
     <div>
      
       <h2>Phonebook</h2>
-     <Filter filter = {filter} setFilter = {setFilter} />
-    <Notification  message={message} />
+     <Filter filter = {filter} setFilter = {setFilter}  />
+    <Notification  message={message} setMessage = {setMessage} />
     <Form 
      addName = {addName}
      handleNameChange = {handleNameChange}
@@ -107,7 +110,7 @@ return (
      newName = {newName}
      newNumber = {newNumber} />
      
-     <Persons persons = {filtered} setMessage = {setMessage}> </Persons>
+     <Persons persons = {filtered} setMessage = {setMessage} setPersons = {setPersons} > </Persons>
     </div>
   )
 
@@ -135,7 +138,7 @@ const Form = ({addName,handleNameChange,handleNumberChange,newName,newNumber}) =
   </form>
   )
 }
-const Notification = ({message}) => {
+const Notification = ({message,setMessage}) => {
  
   const style = {
     color: 'green',
@@ -148,7 +151,9 @@ const Notification = ({message}) => {
   }
  
   if(message===null)return null
-
+  setTimeout(() =>{
+    setMessage(null)
+      },3000)
   return(
     <div style = {style}>
       {message}
@@ -172,17 +177,26 @@ const Filter = ({filter,setFilter}) => {
   )
 
 }
-const Persons =({persons ,setMessage}) => {
+
+
+
+const Persons =({persons ,setMessage,setPersons }) => {
   return(
     <>
     <h2>Numbers</h2>
     
       {persons.map(person =><p>{person.name} {person.number}<button onClick={()=> {
         nimet.remove(person.id,person.name)
+       
+        
+        
+
         setMessage(person.name+" deleted")
-        setTimeout(() =>{
-          setMessage(null)
-            },3000)
+        
+            nimet.getNames().then(person => {
+              setPersons(person.data)
+              
+              })
         } }>delete</button></p> )}
       </>
       
