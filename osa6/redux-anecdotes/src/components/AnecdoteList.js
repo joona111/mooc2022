@@ -6,7 +6,7 @@ const AnecdoteList = () => {
     const vote = (id) => {
     
         dispatch(increment(id))
-       
+        
         
       }
 

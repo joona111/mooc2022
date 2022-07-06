@@ -6,7 +6,7 @@ import App from './App'
 import reducer from './reducers/anecdoteReducer'
 import { configureStore } from '@reduxjs/toolkit'
 
-const store = configureStore({reducer,})
+// const store = configureStore({reducer,})
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Provider store={store}>
